@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试七牛云图片文件上传</title>
+    <style>
+    .img_box {
+        height: 200px;
+        width: 200px;
+        margin: auto;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px #ccc;
+        margin-bottom: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <form id="form" method="post" action="http://up-z2.qiniu.com/" enctype="multipart/form-data">
+            <input id="key" name="key" type="hidden">
+            <input id="x" name="x:<custom_name>" type="hidden">
+            <input id="token" name="token" type="hidden">
+            <input id="file" name="file" type="file">
+          <!--   <input name="crc32" type="hidden">
+            <input name="accept" type="hidden"> -->
+            <input type="submit" value="提交">
+        </form>
+    </div>
+    <script>
+    function Ajax(params) {
+        this.url = params.url;
+        this.data = params.data;
+        this.success = params.success;
+        this.error = params.error;
+        this.header = params.header;
+    }
+    Ajax.prototype = {
+        params: function(arg) {
+            // key=value&key=value
+            var o = '';
+            for (var k in arg) {
+                o += k + '=' + arg[k] + '&';
+                // key=value&key=value&
+            }
+            // slice(起始点，切除点)
+            o = o.slice(0, -1);
+            // key=value&key=value
+            return o;
+        },
+        post: function() {
+            var _self = this;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                        if (_self.success) {
+                            _self.success(JSON.parse(xhr.responseText));
+                        }
+                    } else {
+                        if (_self.error) {
+                            _self.error(JSON.parse(xhr.responseText));
+                        }
+                    }
+                }
+            }
+            xhr.open('post', this.url, false);
+            if (this.header) {
+                for (var k in this.header) {
+                    xhr.setRequestHeader(k, this.header[k]);
+                }
+            } else {
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+            }
+            xhr.send(this.params(this.data));
+        },
+        get: function() {
+            var _self = this;
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                        if (_self.success) {
+                            _self.success(JSON.parse(xhr.responseText));
+                        }
+                    } else {
+                        if (_self.error) {
+                            _self.error(JSON.parse(xhr.responseText));
+                        }
+                    }
+                }
+            }
+            xhr.open('get', this.url, true);
+            xhr.send(this.params(this.data));
+        }
+
+    }
+    </script>
+    <script>
+    var key = document.getElementById('key');
+    var x = document.getElementById('x');
+    var token = document.getElementById('token');
+    var form = document.getElementById('form');
+    var file = document.getElementById('file');
+    form.onsubmit = function(e) {
+            if (file.files && file.files[0]) {
+                var fls = file.files;
+                var pic = fls[0];
+                var hz = pic.name.split('.')[1];
+                key.value = 'my' + new Date().getTime() + '.' + hz;
+                var ajax = new Ajax({
+                    url: '/updateImg',
+                    data: {
+                        key: key.value
+                    },
+                    success: function(res) {
+                        token.value = res.result.token;
+                    }
+                });
+                ajax.post();
+
+                // e.preventDefault();
+            } else {
+                alert('上传文件为空');
+                e.preventDefault();
+            };
+
+        }
+        // key.value =
+
+    //     file.addEventListener('change', function(e) {
+    //         var fl = e.target;
+    //         var fls = fl.files;
+    //         var pic = fls[0];
+    //         console.log(fl.files);
+    //         var hz = pic.name.split('.')[1];
+    //         var ajax = new Ajax({
+    //             url: '/updateImg',
+    //             data: {
+    //                 key: 'my' + new Date().getTime() + '.' + hz,
+    //                 filePath: 'pic'
+    //             },
+    //             success: function(res) {
+    //                 // var url = 'http://upload.qiniu.com/putb64' + pic.size;
+    //                 // var xhr = new XMLHttpRequest();
+    //                 // xhr.onreadystatechange = function() {
+    //                 //     if (xhr.readyState == 4) {
+    //                 //         let response = JSON.parse(xhr.responseText);
+    //                 //         console.log(response);
+    //                 //     }
+    //                 // }
+    //                 // xhr.open('POST', url, true);
+    //                 // xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    //                 // xhr.setRequestHeader("Authorization", "UpToken " + res.result.token);
+    //                 // xhr.send(pic);
+    //             },
+    //         });
+    //         ajax.post();
+
+
+
+
+    //     })
+    </script>
+</body>
+
+</html>

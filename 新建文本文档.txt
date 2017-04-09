@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>测试七牛云图片文件上传</title>
+	<style>
+		.img_box {
+			height: 200px;
+			width:  200px;
+			margin:  auto;
+			border: 1px solid #ccc;
+			box-shadow: 0 0 10px #ccc;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="box">
+		<div class="img_box"></div>
+		<input type="file">		
+	</div>
+	<script>
+		
+	</script>
+</body>
+</html>
